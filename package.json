@@ -1,0 +1,7 @@
+{
+  "name": "kg",
+  "version": "1.0.0",
+  "dependencies": {
+    "d3": "latest"
+  }
+}
