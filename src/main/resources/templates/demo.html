@@ -9,6 +9,7 @@
     <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
     <script src="https://cdn.bootcss.com/element-ui/2.10.1/index.js"></script>
     <link rel="stylesheet" th:href="@{/css/cw-input-select.css}"/>
+    <link rel="stylesheet" th:href="@{/css/demo.css}"/>
     <script th:src="@{/js/cw-input-select.js}"></script>
 
     <script th:src="@{js/d3.min.js}"></script>
@@ -41,8 +42,8 @@
                 nodes :[],
                 simulation :null,
                 nodesName :[],
-                width : 600,
-                height : 600,
+                width : 800,
+                height : 800,
                 testGraph:{
                     "nodes": [
                         {"id": "Myriel", "group": 1},
@@ -388,11 +389,6 @@
             // this.initGraph(this.testGraph)
             axios.get('api/node/all')
                 .then(function (response) {
-                    if (response.status >= 200 && response.status < 300) {
-                        console.log(response.data);
-                    } else {
-                        console.log(response.message);
-                    }
                     _this.testGraph["nodes"] = response.data;
                     _this.initGraph(_this.testGraph)
                 })
@@ -407,7 +403,8 @@
                 const nodes = data.nodes.map(d => Object.create(d));
 
                 _this.simulation = d3.forceSimulation(nodes)
-                    .force("link", d3.forceLink(links).id(d => d.id))
+                    .force("link", d3.forceLink(links).id(d => d.id).distance(150))
+                    .force("collide",d3.forceCollide().radius(()=>30))
                     .force("charge", d3.forceManyBody().strength(-30))
                     .force("center", d3.forceCenter(_this.width / 2, _this.height / 2));
 
@@ -436,8 +433,9 @@
                     .selectAll("circle")
                     .data(nodes)
                     .join("circle")
-                    .attr("r", 30)
-                    .attr("fill", _this.color)
+                    .attr("r", 35)
+                    // .attr("fill", _this.color)
+                    .attr("fill","#3578FF")
                     .attr("class","node")
                     .on("click",_this.queryTest)
                     .call(_this.drag(_this.simulation));
@@ -455,9 +453,9 @@
                     .attr("dx",function () {
                         return this.getBoundingClientRect().width/2*(-1)
                     })
-                    .attr("dy",50)
+                    .attr("dy",52)
                     .attr("class","nodeName")
-                    .attr("fill","white");
+                    // .attr("fill","black");
 
                 console.log(_this.nodesName);
 
@@ -481,8 +479,10 @@
 
             updateGraph(data){
                 var _this = this;
-                const links = data.links.map(d => Object.create(d));
-                const nodes = data.nodes.map(d => Object.create(d));
+                const links = data.links;
+                const nodes = data.nodes;
+                // const links = data.links.map(d => Object.create(d));
+                // const nodes = data.nodes.map(d => Object.create(d));
 
                 _this.links = _this.links
                     .data(links)
@@ -499,7 +499,8 @@
                     .enter()
                     .append("circle")
                     .attr("r", 30)
-                    .attr("fill", _this.color)
+                    // .attr("fill", _this.color)
+                    .attr("fill","#FF0000")
                     .attr("class","node")
                     .merge(_this.nodes)
                     .on("click",_this.queryTest)
@@ -519,9 +520,9 @@
                     .attr("dx",function () {
                         return this.getBoundingClientRect().width/2*(-1)
                     })
-                    .attr("dy",50)
+                    .attr("dy",43)
                     .attr("class","nodeName")
-                    .attr("fill","white");
+                    // .attr("fill","black");
 
                 _this.simulation.nodes(nodes);
                 _this.simulation.force("link").links(links);
@@ -559,13 +560,13 @@
 
             queryTest(d){
                 var _this = this;
-                this.axios.get('node/适用人群/'+d.id)
+                axios.get('api/node/适用人群/'+d.id)
                     .then(function (response) {
                         if(response.status == 200){
                             for(var i=0;i<response.data.length;i++){
                                 let flag = true;
                                 for(var j=0;j<_this.testGraph.nodes.length;j++){
-                                    if(this.testGraph.nodes[j].id === response.data[i].id){
+                                    if(_this.testGraph.nodes[j].id === response.data[i].id){
                                         flag = false;
                                         break;
                                     }
