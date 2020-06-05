@@ -24,26 +24,51 @@
 </div>
 
 <div class="container" id ="container">
-
+    <detail-panel ref="detailPanel"></detail-panel>
 </div>
+
+<el-card class="box-card detail-panel" shadow="hover">
+    <div slot="header" class="clearfix">
+        <span>节点信息</span>
+    </div>
+    <div class="text item">
+<!--        <span>{{currentNode.id}}</span>-->
+    </div>
+</el-card>
+
 <script th:src="@{js/axios.min.js}"></script>
 <script>
 
     new Vue({
         el: '#app'
-    })
+    });
+
+    new Vue({
+        el:"#DetailPanel",
+        data(){
+            return{
+                currentNode:{
+                    "id":''
+                }
+            }
+        }
+    });
 
 
     new Vue({
         el:'#container',
-        data () {
+        components:{detailPanel},
+        data (){
             return {
                 links :[],
                 nodes :[],
                 simulation :null,
                 nodesName :[],
+                linksName:[],
+                scale:1,
                 width : 800,
                 height : 800,
+                colorList:['#FD7623','#3388B1','#D82952','#F3D737','#409071','#D74E52'],
                 testGraph:{
                     "nodes": [
                         {"id": "Myriel", "group": 1},
@@ -403,10 +428,11 @@
                 const nodes = data.nodes.map(d => Object.create(d));
 
                 _this.simulation = d3.forceSimulation(nodes)
-                    .force("link", d3.forceLink(links).id(d => d.id).distance(150))
+                    .force("link", d3.forceLink(links).id(d => d.id).distance(200))
                     .force("collide",d3.forceCollide().radius(()=>30))
                     .force("charge", d3.forceManyBody().strength(-30))
                     .force("center", d3.forceCenter(_this.width / 2, _this.height / 2));
+
 
                 // const svg = d3.create("svg")
                 //   .attr("viewBox", [0, 0, width, height]);
@@ -416,18 +442,41 @@
                 svg.call(d3.zoom().on("zoom",function(){
                     g.attr("transform",d3.event.transform)
                 }));
-
                 const g =svg.append("g");
 
+                const positiveMarker = svg.append("marker")
+                    .attr("id","positiveMarker")
+                    .attr("orient","auto")
+                    .attr("stroke-width",2)
+                    .attr("markerUnits","strokeWidth")
+                    .attr("markerUnits","userSpaceOnUse")
+                    .attr("viewBox","0 -5 10 10")
+                    .attr("refX",40)
+                    .attr("refY",0)
+                    .attr("markerWidth",12)
+                    .attr("markerHeight",12)
+                    .append("path")
+                    .attr("d","M 0 -5 L 10 0 L 0 5")
+                    .attr("fill","#999")
+                    .attr("stroke-opacity", 0.6);
 
-                _this.links = g.append("g")
-                    .attr("stroke", "#999")
-                    .attr("stroke-opacity", 0.6)
-                    .selectAll("line")
-                    .data(links)
-                    .join("line")
-                    .attr("stroke-width", d => Math.sqrt(d.value))
-                    .attr("class","link");
+                const negativeMarker = svg.append("marker")
+                    .attr("id","negativeMarker")
+                    .attr("orient","auto")
+                    .attr("stroke-width",2)
+                    .attr("markerUnits","strokeWidth")
+                    .attr("markerUnits","userSpaceOnUse")
+                    .attr("viewBox","0 -5 10 10")
+                    .attr("refX",-30)
+                    .attr("refY",0)
+                    .attr("markerWidth",12)
+                    .attr("markerHeight",12)
+                    .append("path")
+                    .attr("d","M 10 5 L 0 0 L 10 -5")
+                    .attr("fill","#999")
+                    .attr("stroke-opacity", 0.6);
+
+
 
                 _this.nodes = g.append("g")
                     .selectAll("circle")
@@ -454,19 +503,71 @@
                         return this.getBoundingClientRect().width/2*(-1)
                     })
                     .attr("dy",52)
-                    .attr("class","nodeName")
+                    .attr("class","nodeName");
                     // .attr("fill","black");
+
+                _this.links = g.append("g")
+                    .attr("stroke", "#999")
+                    .attr("stroke-opacity", 0.6)
+                    .attr("marker-end","url(#direction)")
+                    .selectAll("path")
+                    .data(links)
+                    .join("path")
+                    .attr("stroke-width", d => Math.sqrt(d.value))
+                    .attr("class","link")
+                    .attr("id",d => d.source+'_'+d.relationship+'_'+d.target);
+
+                _this.linksName = g.append("g")
+                    .selectAll("text")
+                    .data(links)
+                    .join("text")
+                    .style("text-anchor",",middle")
+                    .style("fill","white")
+                    .style("font-size","10px")
+                    .style("font-weight","bold")
+                    .append('textPath')
+                    .attr(
+                        'xlink:href',d => '#' +d.source+'_'+d.relationship+'_'+d.target
+                    )
+                    .attr("startOffset",'50%')
+                    .text(function (d) {
+                        return d.relationship
+                    });
 
                 console.log(_this.nodesName);
 
 
                 _this.simulation.on("tick", () => {
+                    // _this.links
+                    //     .attr("d",d => "M "+d.target.x+" "+d.target.y+" L "+d.source.x+" "+d.source.y);
+                        // .attr("x1", d => d.source.x)
+                        // .attr("y1", d => d.source.y)
+                        // .attr("x2", d => d.target.x)
+                        // .attr("y2", d => d.target.y);
                     _this.links
-                        .attr("x1", d => d.source.x)
-                        .attr("y1", d => d.source.y)
-                        .attr("x2", d => d.target.x)
-                        .attr("y2", d => d.target.y);
-
+                        .attr("d",function (d) {
+                            if(d.source.x<d.target.x){
+                                return "M "+d.target.x+" "+d.target.y+" L "+d.source.x+" "+d.source.y
+                            }
+                            else{
+                                return "M "+d.source.x+" "+d.source.y+" L "+d.target.x+" "+d.target.y
+                            }
+                        })
+                        .attr("marker-end",function (d) {
+                            if(d.source.x<d.target.x){
+                                return "url(#positiveMarker)"
+                            }else{
+                                return null
+                            }
+                        })
+                        .attr("marker-start",function (d) {
+                            if(d.source.x<d.target.x){
+                                return null
+                            }else{
+                                return "url(#negativeMarker)"
+                            }
+                        });
+                    
                     _this.nodes
                         .attr("cx", d => d.x)
                         .attr("cy", d => d.y);
@@ -487,12 +588,32 @@
                 _this.links = _this.links
                     .data(links)
                     .enter()
-                    .append("line")
+                    .append("path")
                     .attr("stroke", "#999")
                     .attr("stroke-opacity", 0.6)
                     .attr("stroke-width", d => Math.sqrt(d.value))
+                    .attr("marker-end","url(#direction)")
                     .merge(_this.links)
                     .attr("class","link");
+
+                _this.linksName = _this.linksName
+                    .data(links)
+                    .enter()
+                    .append("text")
+                    .style("text-anchor",",middle")
+                    .style("fill","white")
+                    .style("font-size","10px")
+                    .style("font-weight","bold")
+                    .append('textPath')
+                    .attr(
+                        'xlink:href',d => '#' +d.source+'_'+d.relationship+'_'+d.target
+                    )
+                    .attr("startOffset",'50%')
+                    .merge(_this.linksName)
+                    .text(function (d) {
+                        return d.relationship
+                    });
+
 
                 _this.nodes = _this.nodes
                     .data(nodes)
@@ -523,6 +644,7 @@
                     .attr("dy",43)
                     .attr("class","nodeName")
                     // .attr("fill","black");
+
 
                 _this.simulation.nodes(nodes);
                 _this.simulation.force("link").links(links);
@@ -560,6 +682,8 @@
 
             queryTest(d){
                 var _this = this;
+                console.log(d);
+                _this.$refs.detailPanel.currentNode = d;
                 axios.get('api/node/适用人群/'+d.id)
                     .then(function (response) {
                         if(response.status == 200){
@@ -576,7 +700,8 @@
                                     _this.testGraph.links.push({
                                         "source":d.id,
                                         "target":response.data[i].id,
-                                        "value" :5
+                                        "value" :5,
+                                        "relationship":"适用人群"
                                     });
                                     console.log(_this.testGraph.links)
                                 }
@@ -593,9 +718,12 @@
             }
         }
 
-    })
-</script>
+    });
 
+
+
+
+</script>
 
 
 </body>
