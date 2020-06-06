@@ -27,7 +27,7 @@ public class NodeController {
     public CustomNode findByName(@PathVariable("name") String name){
 //        return NodeService.findByName(name);
         Node node = nodeService.findByName(name);
-        return new CustomNode(node.getName(),1);
+        return new CustomNode(node.getName(),1,node);
     }
 
     @GetMapping("/适用人群/{name}")
@@ -37,7 +37,7 @@ public class NodeController {
         List<CustomNode> customNodes = new ArrayList<>();
         Set<Node2> measureSet = node.getApplicable();
         for(Node2 node2 : measureSet){
-            customNodes.add(new CustomNode(node2.getName(),2));
+            customNodes.add(new CustomNode(node2.getName(),2,node2));
 //            customLinks.add(new CustomLink(node.getName(),node2.getName(),5));
         }
         return customNodes;
@@ -49,7 +49,7 @@ public class NodeController {
         Iterable<Node> NodeIterable = nodeService.findAll();
         List<CustomNode> customNodes = new ArrayList<>();
         for(Node node : NodeIterable){
-            customNodes.add(new CustomNode(node.getName(),1));
+            customNodes.add(new CustomNode(node.getName(),1,node));
             System.out.println(node.getName());
         }
         return customNodes;

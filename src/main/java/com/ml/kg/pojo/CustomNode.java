@@ -4,10 +4,12 @@ public class CustomNode {
 
     private String id;
     private int group;
+    private Object obj;
 
-    public CustomNode(String id, int group) {
+    public CustomNode(String id, int group, Object obj) {
         this.id = id;
         this.group = group;
+        this.obj = obj;
     }
 
     public String getId() {
@@ -24,5 +26,13 @@ public class CustomNode {
 
     public void setGroup(int group) {
         this.group = group;
+    }
+
+    public Object getObj() {
+        return obj;
+    }
+
+    public void setObj(Object obj) {
+        this.obj = obj;
     }
 }

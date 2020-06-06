@@ -393,20 +393,23 @@
                 }
             }
         },
-        mounted() {
-
-            var _this = this;
-            // this.initGraph(this.testGraph)
-            axios.get('api/node/all')
-                .then(function (response) {
-                    _this.testGraph["nodes"] = response.data;
-                    _this.initGraph(_this.testGraph)
-                })
-                .catch(function (error) {
-                    console.log(error)
-                })
+        created() {
+            this.getGraph()
         },
         methods:{
+            getGraph(data){
+                var _this = this;
+                axios.get('api/node/all')
+                    .then(function (response) {
+                        console.log(response)
+                        _this.testGraph["nodes"] = response.data;
+                        _this.initGraph(_this.testGraph)
+                    })
+                    .catch(function (error) {
+                        console.log(error)
+                    })
+            },
+
             initGraph(data){
                 var _this = this;
                 const links = data.links.map(d => Object.create(d));
@@ -667,8 +670,20 @@
 
             queryTest(d){
                 var _this = this;
-                console.log(d);
-                _this.$refs.detailPanel.currentNode = d;
+                let data = {};
+                let temp;
+                for(var i in d.obj){
+                    // console.log(typeof(d.obj[i]));
+                    let ifArray = d.obj[i] instanceof Array;
+                    // console.log(ifArray);
+                    if(!ifArray){
+                        temp = d.obj[i];
+                        if(temp!=null){
+                            data[i] = temp;
+                        }
+                    }
+                }
+                _this.$refs.detailPanel.currentNode = data;
                 axios.get('api/node/适用人群/'+d.id)
                     .then(function (response) {
                         if(response.status == 200){
