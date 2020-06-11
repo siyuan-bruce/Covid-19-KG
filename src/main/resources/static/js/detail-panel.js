@@ -8,34 +8,16 @@
 Vue.component("detail-panel", {
     template: `
         <div class="detail-panel">
-            <el-card class="box-card" shadow="hover" id = "detailPanel" style="     
-              /*.text {*/
-              /*  font-size: 14px;*/
-              /*}*/
-              
-              /*.item {*/
-              /*  padding: 18px 0;*/
-              /*}*/
-              
-              /*.box-card {*/
-              /*  position: fixed;*/
-              /*  right: 10px;*/
-              /*  top: 40px;*/
-              /*  border-radius: 4px;*/
-              /*  width: 200px;*/
-              /*  cursor: pointer;*/
-              /*}    */
-
-            ">
+            <el-card class="box-card" shadow="hover" id = "detailPanel">
                 <div slot="header" class="clearfix">
                     <span>节点信息</span>
                 </div>
                 <div class="text item" v:bind = "currentNode" >
-                    <table>
+                    <table style="margin:auto; border-collapse: collapse">
                         <tbody>
                             <tr v-for="(v,k) in currentNode">
-                                <td class="detail-info">{{k}}</td>
-                                <td class="detail-info">{{v}}</td>
+                                <td class="detail-info" style="text-align:left; border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;">{{k}}</td>
+                                <td class="detail-info" style="text-align:left; border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;">{{v}}</td>
                             </tr>
                         </tbody>
                     </table>

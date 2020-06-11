@@ -2,8 +2,9 @@ body{
     margin : 0px;
 }
 .container{
+    position:relative;
     width :800px;
-    height:800px ;
+    height:700px ;
     border:1px solid #2c3e50;
     border-radius: 8px;
     margin-top: 40px;
@@ -32,4 +33,11 @@ body{
     stroke-width: 5;
 }
 
-
+.detail-panel {
+    position: fixed;
+    right: 10px;
+    top: 40px;
+    border-radius: 4px;
+    width: 345px;
+    cursor: pointer;
+}
