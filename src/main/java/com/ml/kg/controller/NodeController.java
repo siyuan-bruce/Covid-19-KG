@@ -30,12 +30,12 @@ public class NodeController {
         return new CustomNode(node.getName(),1,node);
     }
 
-    @GetMapping("/适用人群/{name}")
-    public List<CustomNode> findApplicable(@PathVariable("name") String name){
+    @GetMapping("/query/{relationship}/{name}")
+    public List<CustomNode> findRelationships(@PathVariable("relationship") String rel,@PathVariable("name") String name){
 //        return NodeService.findByName(name);
         Node node = nodeService.findByName(name);
         List<CustomNode> customNodes = new ArrayList<>();
-        Set<Node2> measureSet = node.getApplicable();
+        Set<Node2> measureSet = nodeService.getNode2ByRelationship(node,rel);
         for(Node2 node2 : measureSet){
             customNodes.add(new CustomNode(node2.getName(),2,node2));
 //            customLinks.add(new CustomLink(node.getName(),node2.getName(),5));
