@@ -9,16 +9,6 @@ Vue.component("detail-panel", {
         <div v-for="(v,k) in currentNode">{{k}}:{{v}}</div>
     </div>
 </el-card>
-<style scoped>
-    .detail-panel {
-        position: fixed;
-        right: 10px;
-        top: 40px;
-        border-radius: 4px;
-        width: 200px;
-        cursor: pointer;
-    }
-</style>
 `,
     data: function () {
         return {

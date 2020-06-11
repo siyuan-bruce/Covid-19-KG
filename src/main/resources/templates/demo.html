@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Covid-19-KG</title>
     <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdn.bootcss.com/vue/2.6.10/vue.min.js"></script>
     <script src="https://cdn.bootcss.com/element-ui/2.10.1/index.js"></script>
@@ -13,6 +13,10 @@
     <script th:src="@{/js/cw-input-select.js}"></script>
     <script th:src="@{/js/detail-panel.js}"></script>
     <script th:src="@{js/d3.min.js}"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script th:src="@{js/elementui.min.js}"></script>
 </head>
 <body>
 
@@ -22,11 +26,12 @@
     </div>
 
 
+    <div class="container" id ="container">
+        <detail-panel ref="detailPanel"></detail-panel>
+    </div>
 </div>
 
-<div class="container" id ="container">
-    <detail-panel ref="detailPanel"></detail-panel>
-</div>
+
 
 
 

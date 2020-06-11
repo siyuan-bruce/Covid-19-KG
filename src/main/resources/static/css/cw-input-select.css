@@ -18,7 +18,8 @@ ul, li {
 
 /* 组件整体容器 */
 .cw-input-select_wrap {
-    position: relative;
+    left:30%;
+    position: absolute;
     width: 600px;
     height: 28px;
     font-size: 14px;
@@ -141,3 +142,4 @@ ul, li {
     transform: rotate(-45deg);
     top: 12px;
 }
+
