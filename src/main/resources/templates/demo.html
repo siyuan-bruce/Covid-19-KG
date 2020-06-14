@@ -11,6 +11,7 @@
     <link rel="stylesheet" th:href="@{/css/cw-input-select.css}"/>
     <link rel="stylesheet" th:href="@{/css/demo.css}"/>
     <script th:src="@{/js/cw-input-select.js}"></script>
+    <script th:src="@{/js/hot-spot.js}"></script>
     <script th:src="@{/js/detail-panel.js}"></script>
     <script th:src="@{js/d3.min.js}"></script>
     <!-- 引入样式 -->
@@ -21,13 +22,24 @@
 <body>
 
 <div id="app">
+
+
     <div style="display: inline-block;">
         <cw-input-select></cw-input-select>
     </div>
 
 
+<div>
+    <hot-spot></hot-spot>
+    <detail-panel ref="detailPanel"></detail-panel>
+</div>
+
+
     <div class="container" id ="container">
-        <detail-panel ref="detailPanel"></detail-panel>
+
+
+
+
     </div>
 </div>
 
@@ -39,7 +51,8 @@
 <script>
 
     new Vue({
-        el: '#app'
+        el: '#app',
+
     });
 
 

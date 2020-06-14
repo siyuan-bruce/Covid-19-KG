@@ -37,6 +37,16 @@ Vue.component('cw-input-select', {
         selected: function (val) {
             this.selectedValue = val;
             this.isShowPop = false;
+            axios.put('writeHotSpot/',
+                {"name":val})
+
+                .then(response => (
+
+                    console.log(response)
+
+                ))
+
+
         },
         getdata: function () {
             var keyword = this.keyword;
@@ -46,6 +56,8 @@ Vue.component('cw-input-select', {
                 this.optionsList = response.data; //数据获得成功 vue双向绑定
 
             })
+
+
         },
     },
     created: function () {
