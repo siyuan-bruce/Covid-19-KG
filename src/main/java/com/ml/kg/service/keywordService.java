@@ -22,6 +22,8 @@ import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -170,8 +172,8 @@ public class keywordService {
         searchSourceBuilder.size(10);
 
         //模糊查询
-        MatchQueryBuilder queryBuilder = QueryBuilders.matchQuery("label","人物");
-        searchSourceBuilder.query(queryBuilder).sort("clickNum");
+        MatchQueryBuilder queryBuilder = QueryBuilders.matchQuery("Common","Common");
+        searchSourceBuilder.sort(new FieldSortBuilder("clickNum").order(SortOrder.DESC));
         searchSourceBuilder.timeout(new TimeValue(60, TimeUnit.SECONDS));
 
 
@@ -187,7 +189,7 @@ public class keywordService {
         for(SearchHit documentField:response.getHits().getHits()) {
 
             Map<String,Object> sourceAsMap = documentField.getSourceAsMap();
-
+//            System.out.println(sourceAsMap.get("clickNum"));
             list.add(sourceAsMap);
 
         }
