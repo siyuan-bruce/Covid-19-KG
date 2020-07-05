@@ -84,7 +84,7 @@
         methods:{
             getGraph(){
                 var _this = this;
-                axios.get('api/node/all')
+                axios.get('graph/getdomaingraph')
                     .then(function (response) {
                         console.log(response);
                         _this.testGraph["nodes"] = response.data;

@@ -3,7 +3,7 @@ package com.ml.kg.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.ml.kg.bean.hotSpotInfo;
+//import com.ml.kg.bean.hotSpotInfo;
 import com.ml.kg.service.keywordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

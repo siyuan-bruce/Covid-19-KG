@@ -2,7 +2,7 @@ package com.ml.kg.service;
 
 
 import com.alibaba.fastjson.JSON;
-import com.ml.kg.bean.hotSpotInfo;
+//import com.ml.kg.bean.hotSpotInfo;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
