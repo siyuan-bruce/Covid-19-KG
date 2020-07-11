@@ -11,7 +11,7 @@
 //import org.neo4j.driver.v1.GraphDatabase;
 //import org.neo4j.driver.v1.Record;
 //import org.neo4j.driver.v1.Session;
-//import org.neo4j.driver.v1.StatementResult;
+//import org.neo4j.driver.v1.Result;
 //import static org.neo4j.driver.v1.Values.parameters;
 //
 //import org.springframework.web.bind.annotation.RequestBody;
@@ -47,7 +47,7 @@
 //            Driver driver = createDrive();
 //            Session session = driver.session();
 //
-//            StatementResult result = session.run("(n{name:"+code.getName()+"}) RETURN n LIMIT 25");
+//            Result result = session.run("(n{name:"+code.getName()+"}) RETURN n LIMIT 25");
 //            while ( result.hasNext() )
 //            {
 //                Record record = result.next();

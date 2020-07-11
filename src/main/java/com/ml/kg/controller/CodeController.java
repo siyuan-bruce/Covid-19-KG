@@ -11,7 +11,7 @@
 ////import org.neo4j.driver.v1.GraphDatabase;
 ////import org.neo4j.driver.v1.Record;
 ////import org.neo4j.driver.v1.Session;
-////import org.neo4j.driver.v1.StatementResult;
+////import org.neo4j.driver.v1.Result;
 ////import static org.neo4j.driver.v1.Values.parameters;
 //
 //import org.neo4j.driver.AuthTokens;
@@ -19,7 +19,7 @@
 //import org.neo4j.driver.GraphDatabase;
 //import org.neo4j.driver.Record;
 //import org.neo4j.driver.Session;
-////import org.neo4j.driver.StatementResult;
+////import org.neo4j.driver.Result;
 //import static org.neo4j.driver.Values.parameters;
 //import org.springframework.web.bind.annotation.RequestBody;
 //import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,7 +50,7 @@
 //            session.run( "CREATE (a:Person {name: {name}, title: {title}})",
 //                    parameters( "name", "Arthur001", "title", "King001" ) );
 //
-//            StatementResult result = session.run( "MATCH (a:Person) WHERE a.name = {name} " +
+//            Result result = session.run( "MATCH (a:Person) WHERE a.name = {name} " +
 //                            "RETURN a.name AS name, a.title AS title",
 //                    parameters( "name", "Arthur001" ) );
 //
@@ -81,7 +81,7 @@
 //            Driver driver = createDrive();
 //            Session session = driver.session();
 //
-//            StatementResult result =  session.run( "CREATE (a:" + code.getLabel() + " {" + code.getProperty() + "}) return a");
+//            Result result =  session.run( "CREATE (a:" + code.getLabel() + " {" + code.getProperty() + "}) return a");
 //
 //            while (result.hasNext())
 //            {
@@ -110,7 +110,7 @@
 //            Driver driver = createDrive();
 //            Session session = driver.session();
 //
-//            StatementResult result = session.run("MATCH (a:" + code.getLabel() + ") WHERE a." + code.getWhere() + " SET a." + code.getUpdate() + " return COUNT(a)");
+//            Result result = session.run("MATCH (a:" + code.getLabel() + ") WHERE a." + code.getWhere() + " SET a." + code.getUpdate() + " return COUNT(a)");
 //
 //            while (result.hasNext())
 //            {
@@ -159,7 +159,7 @@
 //            Driver driver = createDrive();
 //            Session session = driver.session();
 //
-//            StatementResult result = session.run("MATCH " + code.getProperty() +
+//            Result result = session.run("MATCH " + code.getProperty() +
 //                    " MATCH " + code.getRelation() +
 //                    " WHERE " + code.getWhere() +
 //                    " RETURN " + code.getResult());

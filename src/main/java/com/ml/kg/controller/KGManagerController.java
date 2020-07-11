@@ -21,7 +21,7 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.*;
 
-import static javafx.scene.input.KeyCode.R;
+//import static javafx.scene.input.KeyCode.R;
 
 @Controller
 @RequestMapping(value = "/graph")
@@ -51,9 +51,36 @@ public class KGManagerController extends BaseController {
 		}
 		return result;
 	}
+
 	@ResponseBody
-	@RequestMapping(value = "/getcypherresult")
-	public R<HashMap<String, Object>> getcypherresult(String cypher) {
+	@RequestMapping(value = "/getcypherresult/{relationship}/{name}")
+	public R<HashMap<String, Object>> getcypherresult(@PathVariable("relationship") String rel ,@PathVariable("name") String name) {
+		String cypher = "MATCH (m{name:'"+name+"'})-[:"+rel+"]-(n) RETURN n";
+		R<HashMap<String, Object>> result = new R<HashMap<String, Object>>();
+		String error="";
+		try {
+			HashMap<String, Object> graphData = neo4jUtil.GetGraphNodeAndShip(cypher);
+			result.code = 200;
+			result.data = graphData;
+		} catch (Exception e) {
+			e.printStackTrace();
+			result.code = 500;
+			error=e.getMessage();
+			result.setMsg("服务器错误");
+		}
+		finally {
+			if(StringUtil.isNotBlank(error)){
+				result.code = 500;
+				result.setMsg(error);
+			}
+		}
+		return result;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/getcypherresult/{name}")
+	public R<HashMap<String, Object>> getcypherNoderesult(@PathVariable("name") String name) {
+		String cypher = "MATCH (n{name:'"+name+"'}) RETURN n";
 		R<HashMap<String, Object>> result = new R<HashMap<String, Object>>();
 		String error="";
 		try {

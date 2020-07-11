@@ -5,6 +5,7 @@ import com.ml.kg.util.Neo4jUtil;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.neo4j.driver.Result;
 import org.neo4j.driver.internal.SessionFactoryImpl;
 import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,10 @@ class KgApplicationTests {
     @Test
     public void contextLoads() {
 
-        String cyphersql="MATCH p=()-[r:`不建议使用的交通工具`]->() RETURN p LIMIT 25";
+//        String cyphersql="MATCH (n{name:'学生'}) RETURN n";
+        String cyphersql="MATCH (m{name:'钟南山'}) RETURN m";
+
+//        System.out.println(neo4jUtil.isNeo4jOpen());
         HashMap<String, Object> result=neo4jUtil.GetGraphNodeAndShip(cyphersql);
         System.out.println(JSON.toJSON(result));
     }

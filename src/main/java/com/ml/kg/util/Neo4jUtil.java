@@ -1,17 +1,30 @@
 package com.ml.kg.util;
 
 import com.alibaba.fastjson.JSON;
-import org.neo4j.driver.v1.*;
-import org.neo4j.driver.v1.types.Node;
-import org.neo4j.driver.v1.types.Path;
-import org.neo4j.driver.v1.types.Relationship;
-import org.neo4j.driver.v1.util.Pair;
+import org.neo4j.driver.*;
+
+//import org.neo4j.driver.v1.types.Node;
+//import org.neo4j.driver.v1.types.Path;
+//import org.neo4j.driver.v1.types.Relationship;
+//import org.neo4j.driver.v1.util.Pair;
+
+//import org.neo4j.ogm.driver.Driver;
+//import org.neo4j.ogm.model.Result;
+//import org.neo4j.ogm.session.Session;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.Session;
+import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Path;
+import org.neo4j.driver.types.Relationship;
+import org.neo4j.driver.util.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 public class Neo4jUtil {
@@ -28,23 +41,35 @@ public class Neo4jUtil {
 		return false;
 	}
 
-	public StatementResult excuteCypherSql(String cypherSql) {
-		StatementResult result = null;
+	public Result excuteCypherSql(String cypherSql) {
+
+
 		try (Session session = neo4jDriver.session()) {
+            Stream<Map<String, Object>> stream = session.readTransaction(tx -> {
+                Result result = tx.run(cypherSql);
+                return result.list(r -> r.asMap()).stream();
+            });
 			System.out.println(cypherSql);
-			result = session.run(cypherSql);
-			session.close();
+			stream.forEach(System.out::println);
+
+			Result result2 = session.run(cypherSql);
+			Value node = result2.single().get( 0 );
+			System.out.println(node);
+			if(result2.hasNext()){
+				System.out.println("next");
+			}
+//			session.close();
+			return result2;
 		} catch (Exception e) {
 			throw e;
 		}
-		return result;
 	}
 
 
 	public HashMap<String, Object> GetEntityMap(String cypherSql) {
 		HashMap<String, Object> rss = new HashMap<String, Object>();
 		try {
-			StatementResult result = excuteCypherSql(cypherSql);
+			Result result = excuteCypherSql(cypherSql);
 			if (result.hasNext()) {
 				List<Record> records = result.list();
 				for (Record recordItem : records) {
@@ -77,7 +102,7 @@ public class Neo4jUtil {
 	public List<HashMap<String, Object>> GetGraphNode(String cypherSql) {
 		List<HashMap<String, Object>> ents = new ArrayList<HashMap<String, Object>>();
 		try {
-			StatementResult result = excuteCypherSql(cypherSql);
+			Result result = excuteCypherSql(cypherSql);
 			if (result.hasNext()) {
 				List<Record> records = result.list();
 				for (Record recordItem : records) {
@@ -93,7 +118,7 @@ public class Neo4jUtil {
 								String key = entry.getKey();
 								rss.put(key, entry.getValue());
 							}
-							rss.put("uuid", uuid);
+							rss.put("id", uuid);
 							ents.add(rss);
 						}
 					}
@@ -110,7 +135,7 @@ public class Neo4jUtil {
 	public List<HashMap<String, Object>> GetGraphRelationShip(String cypherSql) {
 		List<HashMap<String, Object>> ents = new ArrayList<HashMap<String, Object>>();
 		try {
-			StatementResult result = excuteCypherSql(cypherSql);
+			Result result = excuteCypherSql(cypherSql);
 			if (result.hasNext()) {
 				List<Record> records = result.list();
 				for (Record recordItem : records) {
@@ -128,7 +153,7 @@ public class Neo4jUtil {
 								String key = entry.getKey();
 								rss.put(key, entry.getValue());
 							}
-							rss.put("uuid", uuid);
+							rss.put("id", uuid);
 							rss.put("sourceid", sourceid);
 							rss.put("targetid", targetid);
 							ents.add(rss);
@@ -146,7 +171,7 @@ public class Neo4jUtil {
 		List<String> nodeids = new ArrayList<String>();
 		List<String> shipids = new ArrayList<String>();
 		try {
-			StatementResult result = excuteCypherSql(cypherSql);
+			Result result = excuteCypherSql(cypherSql);
 			if (result.hasNext()) {
 				List<Record> records = result.list();
 				for (Record recordItem : records) {
@@ -163,7 +188,7 @@ public class Neo4jUtil {
 									String key = entry.getKey();
 									rss.put(key, entry.getValue());
 								}
-								rss.put("uuid", uuid);
+								rss.put("id", uuid);
 							}
 						}else if (typeName.equals("RELATIONSHIP")) {
 							Relationship rship = pair.value().asRelationship();
@@ -176,7 +201,7 @@ public class Neo4jUtil {
 									String key = entry.getKey();
 									rss.put(key, entry.getValue());
 								}
-								rss.put("uuid", uuid);
+								rss.put("id", uuid);
 								rss.put("sourceid", sourceid);
 								rss.put("targetid", targetid);
 							}
@@ -199,7 +224,7 @@ public class Neo4jUtil {
 	public long GetGraphValue(String cypherSql) {
 		long val=0;
 		try {
-			StatementResult cypherResult = excuteCypherSql(cypherSql);
+			Result cypherResult = excuteCypherSql(cypherSql);
 			if (cypherResult.hasNext()) {
 				Record record = cypherResult.next();
 				for (Value value : record.values()) {
@@ -214,8 +239,9 @@ public class Neo4jUtil {
 
 	public HashMap<String, Object> GetGraphNodeAndShip(String cypherSql) {
 		HashMap<String, Object> mo = new HashMap<String, Object>();
-		try {
-			StatementResult result = excuteCypherSql(cypherSql);
+		try(Session session = neo4jDriver.session()) {
+			Result result = session.run(cypherSql);
+			System.out.println("============="+result);
 			if (result.hasNext()) {
 				List<Record> records = result.list();
 				List<HashMap<String, Object>> ents = new ArrayList<HashMap<String, Object>>();
@@ -239,7 +265,7 @@ public class Neo4jUtil {
                                     String key = entry.getKey();
                                     rss.put(key, entry.getValue());
                                 }
-                                rss.put("uuid", uuid);
+                                rss.put("id", uuid);
                                 uuids.add(uuid);
                             }
                             if (rss != null && !rss.isEmpty()) {
@@ -256,7 +282,7 @@ public class Neo4jUtil {
                                     String key = entry.getKey();
                                     rships.put(key, entry.getValue());
                                 }
-                                rships.put("uuid", uuid);
+                                rships.put("id", uuid);
                                 rships.put("sourceid", sourceid);
                                 rships.put("targetid", targetid);
 								shipids.add(uuid);
@@ -275,7 +301,7 @@ public class Neo4jUtil {
 									String key = entry.getKey();
 									rss.put(key, entry.getValue());
 								}
-								rss.put("uuid", startNodeuuid);
+								rss.put("id", startNodeuuid);
 								uuids.add(startNodeuuid);
 								if (rss != null && !rss.isEmpty()) {
 									ents.add(rss);
@@ -290,7 +316,7 @@ public class Neo4jUtil {
 									String key = entry.getKey();
 									rss.put(key, entry.getValue());
 								}
-								rss.put("uuid", endNodeuuid);
+								rss.put("id", endNodeuuid);
 								uuids.add(endNodeuuid);
 								if (rss != null && !rss.isEmpty()) {
 									ents.add(rss);
@@ -307,7 +333,7 @@ public class Neo4jUtil {
 										String key = entry.getKey();
 										rss.put(key, entry.getValue());
 									}
-									rss.put("uuid", uuid);
+									rss.put("id", uuid);
 									uuids.add(uuid);
 									if (rss != null && !rss.isEmpty()) {
 										ents.add(rss);
@@ -327,7 +353,7 @@ public class Neo4jUtil {
 										String key = entry.getKey();
 										rships.put(key, entry.getValue());
 									}
-									rships.put("uuid", uuid);
+									rships.put("id", uuid);
 									rships.put("sourceid", sourceid);
 									rships.put("targetid", targetid);
 									shipids.add(uuid);
@@ -351,7 +377,7 @@ public class Neo4jUtil {
                                         String key = entry.getKey();
                                         rships.put(key, entry.getValue());
                                     }
-                                    rships.put("uuid", uuid);
+                                    rships.put("id", uuid);
                                     rships.put("sourceid", sourceid);
                                     rships.put("targetid", targetid);
 									shipids.add(uuid);
@@ -375,6 +401,7 @@ public class Neo4jUtil {
 				mo.put("relationship", ships);
 			}
 
+			session.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw e;
@@ -389,7 +416,7 @@ public class Neo4jUtil {
 	public List<HashMap<String, Object>> GetEntityList(String cypherSql) {
 		List<HashMap<String, Object>> ents = new ArrayList<HashMap<String, Object>>();
 		try {
-			StatementResult result = excuteCypherSql(cypherSql);
+			Result result = excuteCypherSql(cypherSql);
 			if (result.hasNext()) {
 				List<Record> records = result.list();
 				for (Record recordItem : records) {
@@ -442,7 +469,7 @@ public class Neo4jUtil {
 	public <T> T GetEntityItem(String cypherSql, Class<T> type) {
 		HashMap<String, Object> rss = new HashMap<String, Object>();
 		try {
-			StatementResult result = excuteCypherSql(cypherSql);
+			Result result = excuteCypherSql(cypherSql);
 			if (result.hasNext()) {
 				Record record = result.next();
 				for (Value value : record.values()) {
@@ -474,7 +501,7 @@ public class Neo4jUtil {
 	public HashMap<String, Object> GetEntity(String cypherSql) {
 		HashMap<String, Object> rss = new HashMap<String, Object>();
 		try {
-			StatementResult result = excuteCypherSql(cypherSql);
+			Result result = excuteCypherSql(cypherSql);
 			if (result.hasNext()) {
 				Record record = result.next();
 				for (Value value : record.values()) {
@@ -506,7 +533,7 @@ public class Neo4jUtil {
 	public Integer executeScalar(String cypherSql) {
 		Integer count = 0;
 		try {
-			StatementResult result = excuteCypherSql(cypherSql);
+			Result result = excuteCypherSql(cypherSql);
 			if (result.hasNext()) {
 				Record record = result.next();
 				for (Value value : record.values()) {
@@ -527,7 +554,7 @@ public class Neo4jUtil {
 	public HashMap<String, Object> GetRelevantEntity(String cypherSql) {
 		HashMap<String, Object> rss = new HashMap<String, Object>();
 		try {
-			StatementResult resultNode = excuteCypherSql(cypherSql);
+			Result resultNode = excuteCypherSql(cypherSql);
 			if (resultNode.hasNext()) {
 				List<Record> records = resultNode.list();
 				for (Record recordItem : records) {

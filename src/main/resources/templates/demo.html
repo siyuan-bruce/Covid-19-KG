@@ -84,10 +84,10 @@
         methods:{
             getGraph(){
                 var _this = this;
-                axios.get('graph/getdomaingraph')
+                axios.get('graph/getcypherresult/钟南山')
                     .then(function (response) {
                         console.log(response);
-                        _this.testGraph["nodes"] = response.data;
+                        _this.testGraph["nodes"] = response.data.data.node;
                         _this.initGraph(_this.testGraph)
                     })
                     .catch(function (error) {
@@ -221,16 +221,16 @@
                     .on("click",_this.select)//点击事件
                     .call(_this.drag(_this.simulation));//拖动，drag里面
 
-                //在nodes上加上title标签来表示节点名称（d.id）
+                //在nodes上加上title标签来表示节点名称（d.name）
                 _this.nodes.append("title")
-                    .text(d => d.id);
+                    .text(d => d.name);
 
                 //这一层是节点名称
                 _this.nodesName = g.append("g")
                     .selectAll("text")
                     .data(nodes)
                     .join("text")
-                    .text(d => d.id)
+                    .text(d => d.name)
                     .attr("dx",function () {
                         return this.getBoundingClientRect().width/2*(-1)
                     })
