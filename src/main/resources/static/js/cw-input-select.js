@@ -18,6 +18,7 @@ Vue.component('cw-input-select', {
         </div>
     </div>
 </div>`,
+
     data: function () {
         return {
             keyword:"",
@@ -36,7 +37,15 @@ Vue.component('cw-input-select', {
         },
         selected: function (val) {
             this.selectedValue = val;
-            this.isShowPop = false;
+
+
+            //正则表达式去除红色印记
+            val = val.replace(new RegExp("<span style= 'color:red'>","gm"),"");
+            val = val.replace(new RegExp("</span>","gm"),"");
+
+            console.log(val)
+
+                this.isShowPop = false;
             axios.put('writeHotSpot/',
                 {"name":val})
 
@@ -46,13 +55,15 @@ Vue.component('cw-input-select', {
 
                 ))
 
+            window.getGraph(val);
+
 
         },
         getdata: function () {
             var keyword = this.keyword;
             console.log(keyword);
             axios.get('search/' + keyword).then(response => {
-                console.log(response.data);
+                // console.log(response.data);
                 this.optionsList = response.data; //数据获得成功 vue双向绑定
 
             })
