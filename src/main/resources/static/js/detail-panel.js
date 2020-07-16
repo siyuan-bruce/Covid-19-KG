@@ -16,15 +16,15 @@ Vue.component("detail-panel", {
                     <table style="margin:auto; border-collapse: collapse">
                         <tbody>
                             <tr v-for="(v,k) in currentNode">
-                                <td class="detail-info" style="text-align:left; border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;">{{k}}</td>
-                                <td class="detail-info" style="text-align:left; border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;">{{v}}</td>
+                                <td class="detail-info" style="text-align:left; border-width: 1px;padding: 3px;background-color: #ffffff;">{{k}}</td>
+                                <td class="detail-info" style="text-align:left; border-width: 1px;padding: 8px;background-color: #ffffff;">{{v}}</td>
                             </tr>
                         </tbody>
                     </table>
                     <el-form ref="form" label-width="0px" v-show="ifShow">
                       <el-form-item>
                         <el-select v-model="currentType" placeholder="请选择查询关系">
-                          <el-option v-for="(type,i) in relationshipTypes" :label="i" :value="type" :key="type"></el-option>
+                          <el-option v-for="(type,i) in relationshipTypes" :label="type" :value="type" :key="type"></el-option>
                         </el-select>
                       </el-form-item>
                       <el-form-item>
@@ -41,7 +41,7 @@ Vue.component("detail-panel", {
             currentNode:{
             },
             currentType:'',
-            relationshipTypes:['适用人群'],
+            relationshipTypes:['第一作者','共同作者'],
             scale:1,
         }
 
@@ -54,10 +54,10 @@ Vue.component("detail-panel", {
                 this.$message.error('未选择任何类型');
                 return
             }else{
-                axios.get('api/node/query/'+_this.currentType+'/'+_this.currentNode.name)
+                axios.get('graph/getcypherresult/'+_this.currentType+'/'+_this.currentNode.name)
                     .then(function (response) {
                         if(response.status == 200){
-                            _this.$emit('update',response.data,_this.currentNode,_this.currentType)
+                            _this.$emit('update',response.data.data.node,_this.currentNode,_this.currentType)
                         }
                     })
                     .catch(function (error) {

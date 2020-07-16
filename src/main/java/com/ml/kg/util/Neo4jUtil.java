@@ -277,6 +277,7 @@ public class Neo4jUtil {
                             if (!shipids.contains(uuid)) {
                                 String sourceid = String.valueOf(rship.startNodeId());
                                 String targetid = String.valueOf(rship.endNodeId());
+								String type = String.valueOf(rship.type());
                                 Map<String, Object> map = rship.asMap();
                                 for (Entry<String, Object> entry : map.entrySet()) {
                                     String key = entry.getKey();
@@ -285,6 +286,7 @@ public class Neo4jUtil {
                                 rships.put("id", uuid);
                                 rships.put("sourceid", sourceid);
                                 rships.put("targetid", targetid);
+								rships.put("type", type);
 								shipids.add(uuid);
                                 if (rships != null && !rships.isEmpty()) {
                                     ships.add(rships);
@@ -348,6 +350,7 @@ public class Neo4jUtil {
 									rships=new HashMap<String, Object>();
 									String sourceid = String.valueOf(next.startNodeId());
 									String targetid = String.valueOf(next.endNodeId());
+									String type = String.valueOf(next.type());
 									Map<String, Object> map = next.asMap();
 									for (Entry<String, Object> entry : map.entrySet()) {
 										String key = entry.getKey();
@@ -356,6 +359,7 @@ public class Neo4jUtil {
 									rships.put("id", uuid);
 									rships.put("sourceid", sourceid);
 									rships.put("targetid", targetid);
+									rships.put("type", type);
 									shipids.add(uuid);
 									if (rships != null && !rships.isEmpty()) {
 										ships.add(rships);
@@ -372,6 +376,7 @@ public class Neo4jUtil {
                                 if (!shipids.contains(uuid)) {
                                     String sourceid = String.valueOf(rship.startNodeId());
                                     String targetid = String.valueOf(rship.endNodeId());
+									type = String.valueOf(rship.type());
                                     Map<String, Object> map = rship.asMap();
                                     for (Entry<String, Object> entry : map.entrySet()) {
                                         String key = entry.getKey();
@@ -380,6 +385,7 @@ public class Neo4jUtil {
                                     rships.put("id", uuid);
                                     rships.put("sourceid", sourceid);
                                     rships.put("targetid", targetid);
+                                    rships.put("type", type);
 									shipids.add(uuid);
                                     if (rships != null && !rships.isEmpty()) {
                                         ships.add(rships);

@@ -80,7 +80,7 @@ public class KGManagerController extends BaseController {
 	@ResponseBody
 	@RequestMapping(value = "/getcypherresult/{name}")
 	public R<HashMap<String, Object>> getcypherNoderesult(@PathVariable("name") String name) {
-		String cypher = "MATCH (n{name:'"+name+"'}) RETURN n";
+		String cypher = "MATCH (n{name:'"+name+"'})-[r]-(m) RETURN n,r";
 		R<HashMap<String, Object>> result = new R<HashMap<String, Object>>();
 		String error="";
 		try {
