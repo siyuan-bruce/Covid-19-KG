@@ -31,18 +31,14 @@
 
 <div>
     <hot-spot></hot-spot>
-    <detail-panel ref="detailPanel"></detail-panel>
 </div>
 
-
+</div>
     <div class="container" id ="container">
-
-
-
-
+        <detail-panel ref="detailPanel" @update="getQueryResult"></detail-panel>
     </div>
 
-</div>
+
 
 
 
@@ -81,13 +77,24 @@
         created() {
             this.getGraph()
         },
-        methods:{
-            getGraph(){
+        methods: {
+            getGraph() {
                 var _this = this;
                 axios.get('graph/getcypherresult/钟南山')
                     .then(function (response) {
                         console.log(response);
                         _this.testGraph["nodes"] = response.data.data.node;
+                        var relationship = response.data.data.relationship;
+                        var arr = [];    //定义一个临时数组
+                        for (var i = 0; i < relationship.length; i++) {    //循环遍历当前数组
+                            //判断当前数组下标为i的元素是否已经保存到临时数组
+                            //如果已保存，则跳过，否则将此元素保存到临时数组中
+                            if (arr.indexOf(relationship[i]['type']) == -1) {
+                                arr.push(relationship[i]['type']);
+                            }
+                        }
+                        _this.$refs.detailPanel.relationshipTypes = arr;
+
                         _this.initGraph(_this.testGraph)
                     })
                     .catch(function (error) {
@@ -95,7 +102,7 @@
                     })
             },
 
-            initGraph(data){
+            initGraph(data) {
                 //this即Vue组件
                 var _this = this;
                 //从后端获取数据，map是前面测试数据保留的，不需要map也可以
@@ -104,8 +111,8 @@
 
                 //力导向图的仿真
                 _this.simulation = d3.forceSimulation(nodes)
-                    .force("link", d3.forceLink(links).id(d => d.id).distance(150))//连接力,d.id是d3处理时的访问器,即绑定的node
-                    .force("collide",d3.forceCollide().radius(()=>35))//碰撞 碰撞半径
+                    .force("link", d3.forceLink(links).id(d => d.name).distance(150))//连接力,d.id是d3处理时的访问器,即绑定的node
+                    .force("collide", d3.forceCollide().radius(() => 35))//碰撞 碰撞半径
                     .force("charge", d3.forceManyBody().strength(-10))//电荷力 排斥力
                     .force("center", d3.forceCenter(_this.width / 2, _this.height / 2));//力学中心
 
@@ -117,48 +124,47 @@
                     .append("svg")
                     .attr("viewBox", [0, 0, _this.width, _this.height]);//设置可视范围
                 //滚动放缩的监听
-                svg.call(d3.zoom().on("zoom",function(){
-                    g.attr("transform",d3.event.transform)
+                svg.call(d3.zoom().on("zoom", function () {
+                    g.attr("transform", d3.event.transform)
                 }));
 
                 // _this.addMarkers()
 
                 //g是总的画布
-                const g =svg.append("g")
-                    .attr("class","content")
+                const g = svg.append("g")
+                    .attr("class", "content")
 
                 const positiveMarker = svg.append("marker")
-                    .attr("id","positiveMarker")
-                    .attr("orient","auto")
-                    .attr("stroke-width",2)
-                    .attr("markerUnits","strokeWidth")
-                    .attr("markerUnits","userSpaceOnUse")
-                    .attr("viewBox","0 -5 10 10")
-                    .attr("refX",40)
-                    .attr("refY",0)
-                    .attr("markerWidth",12)
-                    .attr("markerHeight",12)
+                    .attr("id", "positiveMarker")
+                    .attr("orient", "auto")
+                    .attr("stroke-width", 2)
+                    .attr("markerUnits", "strokeWidth")
+                    .attr("markerUnits", "userSpaceOnUse")
+                    .attr("viewBox", "0 -5 10 10")
+                    .attr("refX", 40)
+                    .attr("refY", 0)
+                    .attr("markerWidth", 12)
+                    .attr("markerHeight", 12)
                     .append("path")
-                    .attr("d","M 0 -5 L 10 0 L 0 5")
-                    .attr("fill","#999")
+                    .attr("d", "M 0 -5 L 10 0 L 0 5")
+                    .attr("fill", "#999")
                     .attr("stroke-opacity", 0.6);
 
                 const negativeMarker = svg.append("marker")
-                    .attr("id","negativeMarker")
-                    .attr("orient","auto")
-                    .attr("stroke-width",2)
-                    .attr("markerUnits","strokeWidth")
-                    .attr("markerUnits","userSpaceOnUse")
-                    .attr("viewBox","0 -5 10 10")
-                    .attr("refX",-30)
-                    .attr("refY",0)
-                    .attr("markerWidth",12)
-                    .attr("markerHeight",12)
+                    .attr("id", "negativeMarker")
+                    .attr("orient", "auto")
+                    .attr("stroke-width", 2)
+                    .attr("markerUnits", "strokeWidth")
+                    .attr("markerUnits", "userSpaceOnUse")
+                    .attr("viewBox", "0 -5 10 10")
+                    .attr("refX", -30)
+                    .attr("refY", 0)
+                    .attr("markerWidth", 12)
+                    .attr("markerHeight", 12)
                     .append("path")
-                    .attr("d","M 10 5 L 0 0 L 10 -5")
-                    .attr("fill","#999")
+                    .attr("d", "M 10 5 L 0 0 L 10 -5")
+                    .attr("fill", "#999")
                     .attr("stroke-opacity", 0.6);
-
 
 
                 //第一层的g放的是所有的连接线
@@ -166,45 +172,44 @@
                     .attr("stroke", "#999")
                     .attr("stroke-opacity", 0.6)
                     .selectAll("path")
-                    .data(links,function (d) {
-                        if(typeof(d.source) === 'object'){
-                            return d.source.id+'_'+d.relationship+'_'+d.target.id
-                        }else{
-                            return d.source+'_'+d.relationship+'_'+d.target
+                    .data(links, function (d) {
+                        if (typeof (d.source) === 'object') {
+                            return d.source.name + '_' + d.relationship + '_' + d.target.name
+                        } else {
+                            return d.source + '_' + d.relationship + '_' + d.target
                         }
                     })//function构造内部id
                     .join("path")//相当于enter（）.append（"path")的效果
-                    .attr("marker-end","url(#direction)")
+                    .attr("marker-end", "url(#direction)")
                     .attr("stroke-width", d => Math.sqrt(d.value))//线的粗细
-                    .attr("class","link")
-                    .attr("id",function (d) {
-                        if(typeof(d.source) === 'object'){
-                            return d.source.id+'_'+d.relationship+'_'+d.target.id
-                        }else{
-                            return d.source+'_'+d.relationship+'_'+d.target
+                    .attr("class", "link")
+                    .attr("id", function (d) {
+                        if (typeof (d.source) === 'object') {
+                            return d.source.name + '_' + d.relationship + '_' + d.target.name
+                        } else {
+                            return d.source + '_' + d.relationship + '_' + d.target
                         }
                     });//用来让文字跟随的id
 
                 //连线上的关系名，置于第二层
                 _this.linksName = g.append("g")
                     .selectAll("text")
-                    .data(links,function (d) {
-                        if(typeof(d.source) === 'object'){
-                            return d.source.id+'_'+d.relationship+'_'+d.target.id
-                        }else{
-                            return d.source+'_'+d.relationship+'_'+d.target
+                    .data(links, function (d) {
+                        if (typeof (d.source) === 'object') {
+                            return d.source.id + '_' + d.relationship + '_' + d.target.id
+                        } else {
+                            return d.source + '_' + d.relationship + '_' + d.target
                         }
                     })
                     .join("text")
-                    .style("text-anchor",",middle")
-                    .style("fill","white")
-                    .style("font-size","10px")
-                    .style("font-weight","bold")
+                    .style("text-anchor", ",middle")
+                    .style("fill", "white")
+                    .style("font-size", "10px")
                     .append('textPath')//text里面放textPath
                     .attr(
-                        'xlink:href',d => '#' +d.source+'_'+d.relationship+'_'+d.target
+                        'xlink:href', d => '#' + d.source + '_' + d.relationship + '_' + d.target
                     )//textPath的路径
-                    .attr("startOffset",'40%')//与text-anchor搭配实现居中效果
+                    .attr("startOffset", '40%')//与text-anchor搭配实现居中效果
                     .text(function (d) {
                         return d.relationship
                     });//将关系写入textPath，作为textPath中的text内容
@@ -212,13 +217,13 @@
                 //这一层是节点
                 _this.nodes = g.append("g")
                     .selectAll("circle")
-                    .data(nodes,d=>d.id)//用于标识
+                    .data(nodes, d => d.name)//用于标识
                     .join("circle")
                     .attr("r", 35)
-                    .attr("class","node")
-                    // .attr("fill", _this.color)
-                    .attr("fill","#3578FF")//填充色
-                    .on("click",_this.select)//点击事件
+                    .attr("class", "node")
+                    .attr("fill", this.color)
+                    // .attr("fill", "#3578FF")//填充色
+                    .on("click", _this.select)//点击事件
                     .call(_this.drag(_this.simulation));//拖动，drag里面
 
                 //在nodes上加上title标签来表示节点名称（d.name）
@@ -231,12 +236,12 @@
                     .data(nodes)
                     .join("text")
                     .text(d => d.name)
-                    .attr("dx",function () {
-                        return this.getBoundingClientRect().width/2*(-1)
+                    .attr("dx", function () {
+                        return this.getBoundingClientRect().width / 2 * (-1)
                     })
-                    .attr("dy",53)//控制节点文字位置
-                    .attr("class","nodeName");
-                    // .attr("fill","black");
+                    .attr("dy", 53)//控制节点文字位置
+                    .attr("class", "nodeName");
+                // .attr("fill","black");
 
                 console.log(_this.nodesName);
 
@@ -245,30 +250,29 @@
                 _this.simulation.on("tick", () => {
                     // _this.links
                     //     .attr("d",d => "M "+d.target.x+" "+d.target.y+" L "+d.source.x+" "+d.source.y);
-                        // .attr("x1", d => d.source.x)
-                        // .attr("y1", d => d.source.y)
-                        // .attr("x2", d => d.target.x)
-                        // .attr("y2", d => d.target.y);
+                    // .attr("x1", d => d.source.x)
+                    // .attr("y1", d => d.source.y)
+                    // .attr("x2", d => d.target.x)
+                    // .attr("y2", d => d.target.y);
                     _this.links
-                        .attr("d",function (d) {
-                            if(d.source.x>d.target.x){
-                                return "M "+d.target.x+" "+d.target.y+" L "+d.source.x+" "+d.source.y
-                            }
-                            else{
-                                return "M "+d.source.x+" "+d.source.y+" L "+d.target.x+" "+d.target.y
+                        .attr("d", function (d) {
+                            if (d.source.x > d.target.x) {
+                                return "M " + d.target.x + " " + d.target.y + " L " + d.source.x + " " + d.source.y
+                            } else {
+                                return "M " + d.source.x + " " + d.source.y + " L " + d.target.x + " " + d.target.y
                             }
                         })//计算起点和终点的位置，将path路径进行实时修改
-                        .attr("marker-end",function (d) {
-                            if(d.source.x>d.target.x){
+                        .attr("marker-end", function (d) {
+                            if (d.source.x > d.target.x) {
                                 return "url(#positiveMarker)"
-                            }else{
+                            } else {
                                 return null
                             }
                         })
-                        .attr("marker-start",function (d) {
-                            if(d.source.x>d.target.x){
+                        .attr("marker-start", function (d) {
+                            if (d.source.x > d.target.x) {
                                 return null
-                            }else{
+                            } else {
                                 return "url(#negativeMarker)"
                             }
                         });
@@ -285,7 +289,7 @@
                 });
             },
 
-            updateGraph(data){
+            updateGraph(data) {
                 var _this = this;
                 const links = data.links;
                 const nodes = data.nodes;
@@ -303,101 +307,102 @@
                 //     .remove();//多退功能，如果关系多出来了就移除掉
 
                 _this.links = _this.links
-                    .data(links,function (d) {
-                    if(typeof(d.source) === 'object'){
-                        return d.source.id+'_'+d.relationship+'_'+d.target.id
-                    }else{
-                        return d.source+'_'+d.relationship+'_'+d.target
-                    }
-                })//将新的数据放进去
+                    .data(links, function (d) {
+                        if (typeof (d.source) === 'object') {
+                            return d.source.name + '_' + d.relationship + '_' + d.target.name
+                        } else {
+                            return d.source + '_' + d.relationship + '_' + d.target
+                        }
+                    })//将新的数据放进去
                     .join("path")//使用join后不需要前面的多退功能，d3新版本的优化
                     // .enter()//新增数据，占位
                     // .append("path")//以path形式补充缺少的页面元素
                     .attr("stroke", "#999")
                     .attr("stroke-opacity", 0.6)
                     .attr("stroke-width", d => Math.sqrt(d.value))
-                    .attr("marker-end","url(#direction)")
+                    .attr("marker-end", "url(#direction)")
                     .merge(_this.links)//将数据融合
-                    .attr('id',function (d) {
-                        if(typeof(d.source) === 'object'){
-                            return d.source.id+'_'+d.relationship+'_'+d.target.id
-                        }else{
-                            return d.source+'_'+d.relationship+'_'+d.target
+                    .attr('id', function (d) {
+                        if (typeof (d.source) === 'object') {
+                            return d.source.name + '_' + d.relationship + '_' + d.target.name
+                        } else {
+                            return d.source + '_' + d.relationship + '_' + d.target
                         }
                     })
-                    .attr("class","link");
+                    .attr("class", "link");
 
-                _this.linksName.data(links,function (d) {
-                    if(typeof(d.source) === 'object'){
-                        return d.source.id+'_'+d.relationship+'_'+d.target.id
-                    }else{
-                        return d.source+'_'+d.relationship+'_'+d.target
+                _this.linksName.data(links, function (d) {
+                    if (typeof (d.source) === 'object') {
+                        return d.source.name + '_' + d.relationship + '_' + d.target.name
+                    } else {
+                        return d.source + '_' + d.relationship + '_' + d.target
                     }
                 })//将新的数据放进去
                     .exit()
-                    .remove()//多退功能，如果关系多出来了就移除掉
+                    .remove();//多退功能，如果关系多出来了就移除掉
 
                 _this.linksName = _this.linksName
-                    .data(links,function (d) {
-                        if(typeof(d.source) === 'object'){
-                            return d.source.id+'_'+d.relationship+'_'+d.target.id
-                        }else{
-                            return d.source+'_'+d.relationship+'_'+d.target
+                    .data(links, function (d) {
+                        if (typeof (d.source) === 'object') {
+                            return d.source.name + '_' + d.relationship + '_' + d.target.name
+                        } else {
+                            return d.source + '_' + d.relationship + '_' + d.target
                         }
                     })
-                    .enter()
-                    .append("text")
-                    .style("text-anchor",",middle")
-                    .style("fill","white")
-                    .style("font-size","10px")
-                    .style("font-weight","bold")
+                    .join("text")
+                    .style("text-anchor", ",middle")
+                    .style("fill", "white")
+                    .style("font-size", "10px");
+
+
+                _this.linksName
                     .append('textPath')
                     .attr(
                         // 'xlink:href',d => '#' +d.source+'_'+d.relationship+'_'+d.
-                        'xlink:href',function (d) {
-                            if(typeof(d.source) === 'object'){
-                                return '#' +d.source.id+'_'+d.relationship+'_'+d.target.id
-                            }else{
-                                return '#' +d.source+'_'+d.relationship+'_'+d.target
+                        'xlink:href', function (d) {
+                            console.log(typeof (d.source));
+                            console.log(typeof (d.target));
+                            if (typeof (d.source) === 'object') {
+                                return '#' + d.source.name + '_' + d.relationship + '_' + d.target.name
+                            } else {
+                                return '#' + d.source + '_' + d.relationship + '_' + d.target
                             }
                         }
                     )
-                    .attr("startOffset",'40%')
+                    .attr("startOffset", '35%')
                     .merge(_this.linksName)
-                    .text(function (d) {
-                        return d.relationship
-                    });
+                    .text(d => d.relationship);
 
 
                 _this.nodes = _this.nodes
-                    .data(nodes)
-                    .enter()
-                    .append("circle")
-                    // .join("circle")
+                    .data(nodes, d => d.name)
+                    // .enter()
+                    // .append("circle")
+                    .join("circle")
                     .attr("r", 30)
-                    .attr("class","node")
-                    // .attr("fill", _this.color)
-                    .attr("fill","#FF0000")
+                    .attr("class", "node")
+                    .attr("fill", this.color)
+                    // .attr("fill", "#FF0000")
                     .merge(_this.nodes)
-                    .on("click",_this.select)
+                    .on("click", _this.select)
                     .call(_this.drag(_this.simulation));
 
                 _this.nodes.append("title")
-                    .text(d => d.id);
+                    .text(d => d.name);
 
                 _this.nodesName = _this.nodesName
                     .data(nodes)
                     .join("text")
                     .merge(_this.nodesName)
                     .text(function (d) {
-                        return d.id
+                        return d.name
                     })
-                    .attr("dx",function () {
-                        return this.getBoundingClientRect().width/2*(-1)
+                    .attr("dx", function () {
+                        return this.getBoundingClientRect().width / 2 * (-1)
                     })
-                    .attr("dy",43)
-                    .attr("class","nodeName");
-                    // .attr("fill","black");
+                    .attr("dy", 43)
+                    .attr("class", "nodeName");
+                // .attr("fill","black");
 
 
                 _this.simulation.nodes(nodes);//nodes信息载入
@@ -405,12 +410,13 @@
                 _this.simulation.alpha(0.2).restart()//仿真重启
             },
 
-            color(d){
-                const scale = d3.scaleOrdinal(d3.schemeCategory10);
-                return d => scale(d.group);
+            color(d) {
+                // const scale = d3.scaleOrdinal(d3.schemeCategory10);
+                // return d => scale(d.group);
+                return this.colorList[d.id%6]
             },
 
-            drag(simulation){
+            drag(simulation) {
                 function dragstarted(d) {
                     if (!d3.event.active) simulation.alphaTarget(0.3).restart();
                     d.fx = d.x;
@@ -434,22 +440,23 @@
                     .on("end", dragended);
             },
 
-            select(d){
+            select(d) {
                 var _this = this;
                 let data = {};
                 let temp;
-                for(var i in d.obj){
+                for (var i in d) {
                     // console.log(typeof(d.obj[i]));
-                    let ifArray = d.obj[i] instanceof Array;
+                    let ifStr = typeof (d[i]) == 'string';
                     // console.log(ifArray);
-                    if(!ifArray){
-                        temp = d.obj[i];
-                        if(temp!=null){
+                    if (ifStr && (i != 'id')) {
+                        temp = d[i];
+                        if (temp != null) {
                             data[i] = temp;
                         }
                     }
                 }
                 _this.$refs.detailPanel.currentNode = data;
+                // _this.$refs.detailPanel.currentType = data;
                 _this.$refs.detailPanel.ifShow = true;
                 // axios.get('api/node/适用人群/'+d.id)
                 //     .then(function (response) {
@@ -484,65 +491,65 @@
                 //     })
             },
 
-            getQueryResult(result,currentNode,currentType){
-                for(var i=0;i<result.length;i++){//result是查询得到的节点组
+            getQueryResult(result, currentNode, currentType) {
+                for (var i = 0; i < result.length; i++) {//result是查询得到的节点组
                     let flag = true;
 
-                    let tempLinks = {
-                        "source":currentNode.name,
-                        "target":result[i].id,
-                        "value" :5,
-                        "relationship":currentType
-                    };
+                    // let tempLinks = {
+                    //     "source":currentNode,
+                    //     "target":result[i],
+                    //     "value" :5,
+                    //     "relationship":currentType
+                    // };
                     //若查询到的节点不存在于原图中，则加进去，若存在则跳过
-                    for(var j=0;j<this.testGraph.nodes.length;j++){
-                        if(this.testGraph.nodes[j].id === result[i].id){
+                    for (var j = 0; j < this.testGraph.nodes.length; j++) {
+                        if (this.testGraph.nodes[j].name === result[i].name) {
                             flag = false;
                             break;
                         }
                     }
-                    if(flag){
+                    if (flag) {
                         this.testGraph.nodes.push(result[i]);
-                    }else{}
-
+                    } else {
+                        console.log("已存在的节点")
+                        console.log(result[i]);
+                    }
                     //将关系添加到图中
                     this.testGraph.links.push({
-                        "source":currentNode.name,
-                        "target":result[i].id,
-                        "value" :5,
-                        "relationship":currentType
+                        "source": currentNode.name,
+                        "target": result[i].name,
+                        "value": 5,
+                        "relationship": currentType
                     });
                 }
                 //遍历图中关系，若图中查询关系的节点含有非查询要求的关系，则将这些关系从图中删除
-                for(var i=this.testGraph.links.length-1;i>=0;i--){
-                    if(this.testGraph.links[i].source.id === currentNode.name && this.testGraph.links[i].relationship !== currentType){
+                for (var i = this.testGraph.links.length - 1; i >= 0; i--) {
+                    if (this.testGraph.links[i].source.name === currentNode.name && this.testGraph.links[i].relationship !== currentType) {
                         let ifRemove = true;
-                        for(var k=0;k<result.length;k++){
-                            if(result[k].id === this.testGraph.links[i].target.id){
+                        for (var k = 0; k < result.length; k++) {
+                            if (result[k].name === this.testGraph.links[i].target.name) {
                                 ifRemove = false;
-                                console.log("不移除此节点 "+this.testGraph.links[i].target.id);
+                                console.log("不移除此节点 " + this.testGraph.links[i].target.name);
                                 break
                             }
                         }
-                        if(ifRemove){
-                            for(var j=this.testGraph.nodes.length-1;j>=0;j--){
-                                if(this.testGraph.links[i].target.id === this.testGraph.nodes[j].id){
-                                    console.log("不移除此节点 "+this.testGraph.links[i].target.id);
-                                    this.testGraph.nodes.splice(j,1);
+                        if (ifRemove) {
+                            for (var j = this.testGraph.nodes.length - 1; j >= 0; j--) {
+                                if (this.testGraph.links[i].target.name === this.testGraph.nodes[j].name) {
+                                    console.log("移除此节点 " + this.testGraph.links[i].target.name);
+                                    this.testGraph.nodes.splice(j, 1);
                                 }
                             }
                         }
 
-                        this.testGraph.links.splice(i,1);
+                        this.testGraph.links.splice(i, 1);
                     }
                 }
                 this.updateGraph(this.testGraph);
-                console.log(this.testGraph)
+                console.log(this.testGraph);
 
             }
-
         }
-
     });
 
 
