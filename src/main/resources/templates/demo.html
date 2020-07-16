@@ -84,6 +84,7 @@
                     .then(function (response) {
                         console.log(response);
                         // var flag = _this.testGraph["nodes"] == 0;
+                        _this.testGraph["links"] = [];
                         _this.testGraph["nodes"] = response.data.data.node;
                         var relationship = response.data.data.relationship;
                         var arr = [];    //定义一个临时数组
@@ -253,7 +254,7 @@
                     .attr("class", "nodeName");
                 // .attr("fill","black");
 
-                d3.select(".container").select("svg").select("path").remove()
+                d3.select(".container").select("svg").selectAll("path").remove();
                 console.log(_this.nodesName);
 
 
@@ -521,17 +522,18 @@
                     }
                     if (flag) {
                         this.testGraph.nodes.push(result[i]);
+                        //将关系添加到图中
+                        this.testGraph.links.push({
+                            "source": currentNode.name,
+                            "target": result[i].name,
+                            "value": 5,
+                            "relationship": currentType
+                        });
                     } else {
                         console.log("已存在的节点")
                         console.log(result[i]);
                     }
-                    //将关系添加到图中
-                    this.testGraph.links.push({
-                        "source": currentNode.name,
-                        "target": result[i].name,
-                        "value": 5,
-                        "relationship": currentType
-                    });
+
                 }
                 //遍历图中关系，若图中查询关系的节点含有非查询要求的关系，则将这些关系从图中删除
                 for (var i = this.testGraph.links.length - 1; i >= 0; i--) {
