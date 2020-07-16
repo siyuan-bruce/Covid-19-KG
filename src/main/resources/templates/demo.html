@@ -75,12 +75,12 @@
             }
         },
         created() {
-            this.getGraph()
+            // this.getGraph()
         },
         methods: {
-            getGraph() {
+            getGraph(val) {
                 var _this = this;
-                axios.get('graph/getcypherresult/钟南山')
+                axios.get('graph/getcypherresult/' + val)
                     .then(function (response) {
                         console.log(response);
                         _this.testGraph["nodes"] = response.data.data.node;
@@ -549,6 +549,9 @@
                 console.log(this.testGraph);
 
             }
+        },
+        mounted() {
+            window.getGraph = this.getGraph;
         }
     });
 

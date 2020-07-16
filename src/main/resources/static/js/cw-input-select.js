@@ -82,4 +82,7 @@ Vue.component('cw-input-select', {
             that.hidePop();
         });
     },
+    mounted() {
+        window.selected = this.selected;
+    }
 })
