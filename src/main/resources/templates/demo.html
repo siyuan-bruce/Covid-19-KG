@@ -467,6 +467,20 @@
                         }
                     }
                 }
+                axios.get('graph/getcypherresult/' + d.name)
+                    .then(function (response) {
+                        console.log(response);
+                        var relationship = response.data.data.relationship;
+                        var arr = [];    //定义一个临时数组
+                        for (var i = 0; i < relationship.length; i++) {    //循环遍历当前数组
+                            //判断当前数组下标为i的元素是否已经保存到临时数组
+                            //如果已保存，则跳过，否则将此元素保存到临时数组中
+                            if (arr.indexOf(relationship[i]['type']) == -1) {
+                                arr.push(relationship[i]['type']);
+                            }
+                        }
+                        _this.$refs.detailPanel.relationshipTypes = arr;
+                    });
                 _this.$refs.detailPanel.currentNode = data;
                 // _this.$refs.detailPanel.currentType = data;
                 _this.$refs.detailPanel.ifShow = true;
