@@ -467,6 +467,7 @@
                         }
                     }
                 }
+                _this.$refs.detailPanel.relationshipTypes = []
                 axios.get('graph/getcypherresult/' + d.name)
                     .then(function (response) {
                         console.log(response);
