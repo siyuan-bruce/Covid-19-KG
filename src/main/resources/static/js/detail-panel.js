@@ -64,7 +64,7 @@ Vue.component("detail-panel", {
                         console.log(error)
                     })
             }
-            console.log(this.currentType)
+            // console.log(this.currentType)
         }
     },
     created: function () {

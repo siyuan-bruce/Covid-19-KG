@@ -43,7 +43,7 @@ Vue.component('cw-input-select', {
             val = val.replace(new RegExp("<span style= 'color:red'>","gm"),"");
             val = val.replace(new RegExp("</span>","gm"),"");
 
-            console.log(val)
+
 
                 this.isShowPop = false;
             axios.put('writeHotSpot/',
@@ -51,7 +51,7 @@ Vue.component('cw-input-select', {
 
                 .then(response => (
 
-                    console.log(response)
+                    console.log()
 
                 ))
 
@@ -61,12 +61,13 @@ Vue.component('cw-input-select', {
         },
         getdata: function () {
             var keyword = this.keyword;
-            console.log(keyword);
+            if(keyword!=""){
             axios.get('search/' + keyword).then(response => {
                 // console.log(response.data);
                 this.optionsList = response.data; //数据获得成功 vue双向绑定
 
             })
+            }
 
 
         },
@@ -75,7 +76,7 @@ Vue.component('cw-input-select', {
         // 点全局范围收起下拉框
         var that = this;
         $('body').click(function (e) {
-            console.log(e);
+            // console.log(e);
             if (e.target.className=='cw-input-select_wrap' || $(e.target).parents('.cw-input-select_wrap').length>0) {
                 return;
             }
