@@ -20,9 +20,9 @@ ul, li {
 .cw-input-select_wrap {
     left:30%;
     position: absolute;
-    width: 600px;
+    width: 40%;
     height: 28px;
-    font-size: 14px;
+    font-size: 15px;
 }
 
 /* 组件内容 */
@@ -64,7 +64,7 @@ ul, li {
     display: inline-block;
     line-height: 28px;
     padding: 0 30px 0 15px;
-    font-size: 12px;
+    font-size: 15px;
     color: #606266;
     /* 文字超出用省略号 */
     white-space: nowrap;

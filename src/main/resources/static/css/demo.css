@@ -4,7 +4,7 @@ body{
 .container{
     position:relative;
     width :750px;
-    height:400px ;
+    height:600px ;
     border:1px solid #2c3e50;
     border-radius: 8px;
     margin-top: 40px;
@@ -16,6 +16,10 @@ body{
     background: #58a;
     background-image:linear-gradient(90deg,white 1px, transparent 0),linear-gradient(white 1px, transparent 0);
     background-size: 30px 30px;
+}
+.container.svg{
+    width :750px;
+    height:600px ;
 }
 
 .node{
