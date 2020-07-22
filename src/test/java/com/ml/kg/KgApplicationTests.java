@@ -34,7 +34,7 @@ class KgApplicationTests {
     public void contextLoads() {
 
 //        String cyphersql="MATCH (n{name:'学生'}) RETURN n";
-        String cyphersql="MATCH (m{name:'钟南山'}) RETURN m";
+        String cyphersql="MATCH (n{name:'蓝月亮芦荟抑菌洗手液'})-[r]-(m) RETURN n,r";
 
 //        System.out.println(neo4jUtil.isNeo4jOpen());
         HashMap<String, Object> result=neo4jUtil.GetGraphNodeAndShip(cyphersql);

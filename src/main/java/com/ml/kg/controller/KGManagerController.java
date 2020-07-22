@@ -85,6 +85,10 @@ public class KGManagerController extends BaseController {
 		String error="";
 		try {
 			HashMap<String, Object> graphData = neo4jUtil.GetGraphNodeAndShip(cypher);
+			if(graphData.isEmpty()){
+				cypher = "MATCH (n{name:'"+name+"'}) RETURN n";
+				graphData = neo4jUtil.GetGraphNodeAndShip(cypher);
+			}
 			result.code = 200;
 			result.data = graphData;
 		} catch (Exception e) {

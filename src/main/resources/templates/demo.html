@@ -536,21 +536,22 @@
                     }
                     if (flag) {
                         this.testGraph.nodes.push(result[i]);
-                        //将关系添加到图中
-                        this.testGraph.links.push({
-                            "source": currentNode.name,
-                            "target": result[i].name,
-                            "value": 5,
-                            "relationship": currentType
-                        });
                     } else {
-                        console.log("已存在的节点")
+                        console.log("已存在的节点");
                         console.log(result[i]);
                     }
+                    //将关系添加到图中
+                    this.testGraph.links.push({
+                        "source": currentNode.name,
+                        "target": result[i].name,
+                        "value": 5,
+                        "relationship": currentType
+                    });
 
                 }
                 //遍历图中关系，若图中查询关系的节点含有非查询要求的关系，则将这些关系从图中删除
                 for (var i = this.testGraph.links.length - 1; i >= 0; i--) {
+                    //从查询节点出发的关系，并非查询要求的关系
                     if (this.testGraph.links[i].source.name === currentNode.name && this.testGraph.links[i].relationship !== currentType) {
                         let ifRemove = true;
                         for (var k = 0; k < result.length; k++) {
