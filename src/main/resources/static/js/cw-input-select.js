@@ -61,7 +61,7 @@ Vue.component('cw-input-select', {
         },
         getdata: function () {
             var keyword = this.keyword;
-            if(keyword!=""){
+            if(keyword!=""){//增加语句判断
             axios.get('search/' + keyword).then(response => {
                 // console.log(response.data);
                 this.optionsList = response.data; //数据获得成功 vue双向绑定

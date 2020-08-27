@@ -2,9 +2,6 @@ package com.ml.kg.service;
 
 
 import com.alibaba.fastjson.JSON;
-//import com.ml.kg.bean.hotSpotInfo;
-import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateRequest;
@@ -16,9 +13,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
@@ -78,6 +73,8 @@ public class keywordService {
 
         //解析结果
         ArrayList<Map<String,Object>> list = new ArrayList<>();
+
+
         for(SearchHit documentField:response.getHits().getHits()) {
 
 
@@ -96,7 +93,6 @@ public class keywordService {
                 String oldtitle = (String) sourceAsMap.get("name");
 
                 sourceAsMap.put("oldtitle",oldtitle);
-
 
                 sourceAsMap.put("title",n_title);
 
@@ -148,10 +144,6 @@ public class keywordService {
         }
         sourceAsMap.put("clickNum",clickNum);
 
-
-        System.out.println(sourceAsMap.toString());
-
-        System.out.println(documentField.getId());
 
         String id = documentField.getId();;
         UpdateRequest request = new UpdateRequest("covid-19", id);
