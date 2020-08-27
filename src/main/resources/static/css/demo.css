@@ -17,6 +17,7 @@ body{
     background-image:linear-gradient(90deg,white 1px, transparent 0),linear-gradient(white 1px, transparent 0);
     background-size: 30px 30px;
 }
+
 .container.svg{
     width :750px;
     height:600px ;
@@ -59,5 +60,29 @@ body{
 .guidance{
     position: fixed;
     left: 10px;
+    top: 20px;
+    border-radius: 4px;
+
 }
+
+.app1{
+    position: fixed;
+    left: 10px;
+    top: 100px;
+    border-radius: 4px;
+    width: 200px;
+    cursor: pointer;
+
+}
+
+
+.guide{
+    position: fixed;
+    right: 20px;
+    top: 45%;
+    border-radius: 4px;
+
+}
+
+
 

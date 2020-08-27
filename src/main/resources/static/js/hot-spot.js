@@ -28,21 +28,6 @@ Vue.component("hot-spot", {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         getdata: function () {
             var keyword = this.keyword;
             // console.log(keyword);

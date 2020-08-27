@@ -14,6 +14,7 @@
     <script th:src="@{/js/hot-spot.js}"></script>
     <script th:src="@{/js/detail-panel.js}"></script>
     <script th:src="@{/js/guidance.js}"></script>
+    <script th:src="@{/js/guide.js}"></script>
     <script th:src="@{js/d3.min.js}"></script>
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
@@ -23,6 +24,7 @@
 <body>
 
 <div id="app">
+<!--    <guidance/>-->
 
     <div style="display: inline-block;">
         <cw-input-select></cw-input-select>
@@ -31,13 +33,46 @@
 
 <div>
     <hot-spot></hot-spot>
+<!--    <guidance></guidance>-->
+
+
 </div>
+
+
+    <div id = "guide" style="right: 100px">
+        <guide></guide>
+        <!--    <guidance></guidance>-->
+
+
+    </div>
+
 
 </div>
     <div class="container" id ="container">
         <detail-panel ref="detailPanel" @update="getQueryResult"></detail-panel>
     </div>
 
+
+<div id="guidance">
+    <el-radio-group v-model="direction">
+        <el-radio label="ltr">从左往右开</el-radio>
+        <el-radio label="rtl">从右往左开</el-radio>
+        <el-radio label="ttb">从上往下开</el-radio>
+        <el-radio label="btt">从下往上开</el-radio>
+    </el-radio-group>
+
+    <el-button @click="drawer = true" type="primary">
+        点我打开
+    </el-button>
+
+    <el-drawer
+            title="我是标题"
+            :visible.sync="drawer"
+            :direction="direction"
+            :before-close="handleClose">
+        <span>我来啦!</span>
+    </el-drawer>
+</div>
 
 
 
@@ -50,7 +85,26 @@
 
     });
 
+    new Vue({
+        el: '#guidance',
 
+        data(){
+            return{
+                drawer: false,
+                direction: 'rtl',
+            }
+        },
+        method:{
+            handleClose(done) {
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        done();
+                    })
+                    .catch(_ => {});
+        }
+
+    }}
+    );
 
     new Vue({
         el:'#container',
